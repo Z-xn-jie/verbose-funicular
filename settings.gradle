@@ -1,2 +1,4 @@
+include ':SearchComponent'
+include ':HomeComponent'
 include ':app'
 rootProject.name = "Demo"
