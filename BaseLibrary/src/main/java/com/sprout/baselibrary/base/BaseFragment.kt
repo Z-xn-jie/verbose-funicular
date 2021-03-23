@@ -6,11 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.sprout.baselibrary.base.BaseModel
-import com.sprout.baselibrary.base.BasePresenter
-import com.sprout.baselibrary.base.BaseView
 
-abstract class BaseLazyFragment<T : BasePresenter<BaseView, BaseModel>>  : Fragment(),BaseView {
+abstract class BaseFragment  : Fragment() {
     /** 布局.xml文件 */
     protected abstract fun getContentViewLayoutID(): Int
 
@@ -22,8 +19,6 @@ abstract class BaseLazyFragment<T : BasePresenter<BaseView, BaseModel>>  : Fragm
 
     /** 每次隐藏时 */
     protected abstract fun onInvisibleToUser()
-    abstract fun getPresenter(): T
-    lateinit var mPresenter: T
     protected  var con: Context? = context
     private var isFirstVisible: Boolean = true
     private var isPrepared: Boolean = false
@@ -50,8 +45,6 @@ abstract class BaseLazyFragment<T : BasePresenter<BaseView, BaseModel>>  : Fragm
         if(con == null){
             con = context
         }
-        if (mPresenter == null) mPresenter = getPresenter()
-        if(mPresenter != null) mPresenter.attachView(this)
     }
     override fun onResume() {
         super.onResume()

@@ -16,19 +16,21 @@ class MainActivity : BaseActivity() {
     private val mIcons = intArrayOf(
             R.drawable.home_selector,
             R.drawable.search_selector,
+            R.drawable.a642c265c319e7b470fe73bdbc664040,
             R.drawable.info_selector,
             R.drawable.mine_selector)
     private val mFragments: MutableList<Fragment> = mutableListOf(
             HomeFragment(),
             SearchFragment(),
             HomeFragment(),
-            SearchFragment()
-    )
+            SearchFragment(),
+            HomeFragment()
+            )
     private lateinit var mPagerAdapter: BasePagerAdapter
 
     override fun initMain() {
         mPagerAdapter = BasePagerAdapter(supportFragmentManager)
-        mPagerAdapter.setFragments(view_pager,mFragments)
+        mPagerAdapter.setFragments(view_pager, mFragments)
         view_pager.adapter = mPagerAdapter
         view_pager.setSmoothScroll(false)
         view_pager.setCanScroll(false)
@@ -48,6 +50,6 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    override fun getLayoutId(): Int =  R.layout.activity_main
+    override fun getLayoutId(): Int = R.layout.activity_main
 
 }

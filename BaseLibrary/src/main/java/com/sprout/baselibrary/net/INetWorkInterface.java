@@ -1,5 +1,7 @@
 package com.sprout.baselibrary.net;
 
-public interface INetWorkInterface {
+import java.util.HashMap;
 
+public interface INetWorkInterface {
+    <T> void get(String url,  INetCallBack<T> callBack);
 }

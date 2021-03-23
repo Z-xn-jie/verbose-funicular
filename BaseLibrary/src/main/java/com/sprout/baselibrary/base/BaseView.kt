@@ -1,3 +1,3 @@
 package com.sprout.baselibrary.base
 
-interface BaseView
+interface BaseView{}

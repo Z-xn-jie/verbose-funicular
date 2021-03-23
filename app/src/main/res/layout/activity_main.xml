@@ -12,8 +12,11 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/tablayout"/>
     <com.google.android.material.tabs.TabLayout
+        app:tabIndicatorHeight="0dp"
+        app:tabBackground="@color/white"
+        app:tabRippleColor="@color/white"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="80dp"
         android:id="@+id/tablayout"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
