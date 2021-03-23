@@ -4,4 +4,5 @@ import java.util.HashMap;
 
 public interface INetWorkInterface {
     <T> void get(String url,  INetCallBack<T> callBack);
+    <T> void postBody(String url, HashMap<String,String> body, INetCallBack<T> callBack);
 }
