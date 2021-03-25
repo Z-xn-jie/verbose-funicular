@@ -9,6 +9,8 @@ import java.util.HashMap;
 public class ImpLoginModel implements ILogin.IModel {
     @Override
     public <T> void getLoginBean(String url, HashMap<String, String> body, INetCallBack<T> callBack) {
-        RetrofitUtil.getInstance().postBody(url,body,callBack);
+        RetrofitUtil instance = RetrofitUtil.getInstance();
+        instance.getBase();
+        instance.postBody(url,body,callBack);
     }
 }

@@ -7,7 +7,7 @@ import com.sprout.baselibrary.interaction.IBaseAppComponent;
 import com.tencent.mmkv.MMKV;
 
 public class MyApp extends Application implements IBaseAppComponent {
-    private static MyApp myApp;
+    public static MyApp myApp;
 
     @Override
     public void onCreate() {

@@ -11,6 +11,8 @@ public class HomeModel implements IHome.IModel {
 
     @Override
     public <T> void getCityBean(String url, INetCallBack<T> callBack) {
-        RetrofitUtil.getInstance().get(url,callBack);
+        RetrofitUtil instance = RetrofitUtil.getInstance();
+        instance.getBase();
+        instance.get(url,callBack);
     }
 }

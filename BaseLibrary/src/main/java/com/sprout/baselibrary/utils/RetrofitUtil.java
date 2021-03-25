@@ -28,8 +28,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitUtil implements INetWorkInterface {
     private static volatile RetrofitUtil retrofitUtil;
-    private final Retrofit retrofit;
-    private final ApiService apiServices;
+    private static Retrofit retrofit;
+    private static ApiService apiServices;
+    static OkHttpClient client;
     public static RetrofitUtil getInstance() {
         if (retrofitUtil == null) {
             synchronized (RetrofitUtil.class) {
@@ -41,7 +42,7 @@ public class RetrofitUtil implements INetWorkInterface {
         return retrofitUtil;
     }
     private RetrofitUtil() {
-        OkHttpClient client = new OkHttpClient
+         client = new OkHttpClient
                 .Builder()
                 .addInterceptor(chain -> {
 //                    拦截请求，获取当前请求
@@ -62,7 +63,9 @@ public class RetrofitUtil implements INetWorkInterface {
                 )
                 .build();
 
-
+    }
+    public  void getBase(){
+        retrofit = null;
         retrofit = new Retrofit.Builder()
                 .baseUrl(UrlConstant.BASE_URL)
                 .client(client)
@@ -70,7 +73,18 @@ public class RetrofitUtil implements INetWorkInterface {
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build();
 
-        apiServices = retrofit.create(ApiService.class);
+         apiServices = retrofit.create(ApiService.class);
+    }
+    public  void getMoney(){
+        retrofit = null;
+        retrofit = new Retrofit.Builder()
+                .baseUrl(UrlConstant.BASE_MONEY)
+                .client(client)
+                .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .build();
+
+         apiServices = retrofit.create(ApiService.class);
     }
     @Override
     public <T> void get(String url, INetCallBack<T> callBack) {

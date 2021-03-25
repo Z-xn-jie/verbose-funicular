@@ -6,6 +6,20 @@ plugins {
 }
 
 android {
+    signingConfigs {
+        resease {
+            storeFile file('D:\\lv_zhou\\Demo\\sprout.jks')
+            storePassword 'sprout918'
+            keyPassword 'sprout918'
+            keyAlias 'key0'
+        }
+        debug {
+            storeFile file('D:\\lv_zhou\\Demo\\sprout.jks')
+            storePassword 'sprout918'
+            keyPassword 'sprout918'
+            keyAlias 'key0'
+        }
+    }
     compileSdkVersion 30
     buildToolsVersion "30.0.3"
 
@@ -17,6 +31,7 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        signingConfig signingConfigs.resease
     }
 
     buildTypes {
@@ -29,10 +44,22 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    repositories {
+        flatDir {
+            dirs 'libs'
+        }
+    }
+
 }
 
 dependencies {
-
+    api 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:+'
+    implementation group: 'com.alipay.sdk', name: 'alipay-sdk-java', version: '4.13.0.ALL'
+    api(name:'alipaysdk-15.8.02.210308182128', ext:'aar')
+    implementation 'cn.finalteam:galleryfinal:1.4.6'
+    implementation 'com.facebook.fresco:fresco:1.3.0'
+    implementation 'pub.devrel:easypermissions:1.0.1'
     implementation  'com.scwang.smart:refresh-layout-kernel:2.0.3'      //核心必须依赖
     implementation  'com.scwang.smart:refresh-header-classics:2.0.3'    //经典刷新头
     //tablayout
