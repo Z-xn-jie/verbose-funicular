@@ -11,6 +11,8 @@ import android.provider.MediaStore
 import android.view.*
 import android.widget.*
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
 import com.example.book.base.BasePagerAdapter
 import com.facebook.drawee.backends.pipeline.Fresco
@@ -26,7 +28,9 @@ import com.sprout.homecomponent.view.HomeFragment
 import com.sprout.searchcomponent.view.SearchFragment
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.item_table.view.*
-import kotlinx.android.synthetic.main.popup_test.*
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.concurrent.timerTask
 
 
 class MainActivity : BaseActivity(), PictureTagFrameLayout.ITagLayoutCallBack {
@@ -34,14 +38,15 @@ class MainActivity : BaseActivity(), PictureTagFrameLayout.ITagLayoutCallBack {
     open lateinit var mViewPager: ViewPager
     private var mPointX: Float = 0F
     private val imageResI = intArrayOf(R.drawable.icon2, R.drawable.icon3, R.drawable.icon4, R.drawable.icon5)
-
+    lateinit var adapter: ImageAdapter
     private var mPointY: Float = 0F
-    lateinit var videoview:VideoView
+    lateinit var videoview: VideoView
     lateinit var imagess: ImageView
     private var mImageAdapter: ImagePagerAdapterForPublish? = null
     private val mTagBeansMap: Map<String, List<ITagBean>>? = null
     private var imageResId: ArrayList<String> = ArrayList()
-    private  var i:Int = 0
+    private var i: Int = 0
+
     /** 主菜单（图标） */
     private val mIcons = intArrayOf(
             R.drawable.home_selector,
@@ -110,33 +115,42 @@ class MainActivity : BaseActivity(), PictureTagFrameLayout.ITagLayoutCallBack {
 
         val text = view.findViewById<TextView>(R.id.texts)
         val button_paizhao = view.findViewById<Button>(R.id.pai_zhao)
-        val button_xiangce = view.findViewById<Button>(R.id.xiang_ce)
-        val button_zhibo = view.findViewById<Button>(R.id.zhi_bo)
-        val button_weixin = view.findViewById<Button>(R.id.weixin)
-         videoview = view.findViewById<VideoView>(R.id.videoview)
+        val button_weixin = view.findViewById<TextView>(R.id.weixin)
+        val shangchuan = view.findViewById<TextView>(R.id.shang_chuan)
+        val recycler = view.findViewById<RecyclerView>(R.id.recyclerView)
+        shangchuan.setOnClickListener {
+            startActivity(Intent(this@MainActivity,ShangActivity::class.java))
+        }
+        videoview = view.findViewById<VideoView>(R.id.videoview)
         mViewPager = view.findViewById(R.id.images)
-        mViewPager.setAdapter(mImageAdapter)
-        button_xiangce.setOnClickListener {
+        val linearLayoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        adapter = ImageAdapter(this@MainActivity)
+        recycler.layoutManager = linearLayoutManager
+        recycler.adapter = adapter
+        adapter.onClickPhoneItem = {
+            mViewPager.setCurrentItem(it,false);
+
+        }
+        adapter.onClickItem = {
             val intent = Intent(Intent.ACTION_PICK,
                     android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
 
             intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
             startActivityForResult(intent, 100)
-
-
         }
+        mViewPager.setAdapter(mImageAdapter)
+
         button_paizhao.setOnClickListener {
             val intents = Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
             startActivityForResult(intents, 1)
 
         }
-        button_zhibo.setOnClickListener {
-            startActivity(Intent(this@MainActivity,ZhiActivity::class.java))
-        }
+
         button_weixin.setOnClickListener {
-            startActivity(Intent(this@MainActivity,WeiActivity::class.java))
+            startActivity(Intent(this@MainActivity, WeiActivity::class.java))
         }
+
         //点击“X”形图片的关闭pop框
         text.setOnClickListener(View.OnClickListener {
             mPopupWindow.dismiss()
@@ -170,32 +184,49 @@ class MainActivity : BaseActivity(), PictureTagFrameLayout.ITagLayoutCallBack {
             /*   val realPathFromUri = RealPathFromUriUtils.getRealPathFromUri(this, data.data)*/
             if (data.data == null) {
                 val imageNames = data.clipData!!
-                val counts = imageNames.itemCount-1
-                for (si in 0..counts){
+                val counts = imageNames.itemCount - 1
+                for (si in 0..counts) {
                     val imageUri = imageNames.getItemAt(si).uri
-                    val video = RealPathFromUriUtils.getRealPathFromUri(this,imageUri)
-                    if(video.substring(video.length-3,video.length).equals("mp4")){
+                    val video = RealPathFromUriUtils.getRealPathFromUri(this, imageUri)
+                    if (video.substring(video.length - 3, video.length).equals("mp4")) {
                         videoview.setVideoURI(imageUri)
                         videoview.start()
                         mViewPager.visibility = View.GONE
                         videoview.visibility = View.VISIBLE
-                    }else{
+                    } else {
                         imageResId.add(imageUri.toString())
                         update()
+                        adapter.addList(imageResId)
                         videoview.stopPlayback()
                         videoview.visibility = View.GONE
                         mViewPager.visibility = View.VISIBLE
                     }
+                }
+            } else {
+                val imageUri = data.data
+                val video = RealPathFromUriUtils.getRealPathFromUri(this, imageUri)
+                if (video.substring(video.length - 3, video.length).equals("mp4")) {
+                    videoview.setVideoURI(imageUri)
+                    videoview.start()
+                    mViewPager.visibility = View.GONE
+                    videoview.visibility = View.VISIBLE
+                } else {
+                    imageResId.add(imageUri.toString())
+                    adapter.addList(imageResId)
+                    update()
+                    videoview.stopPlayback()
+                    videoview.visibility = View.GONE
+                    mViewPager.visibility = View.VISIBLE
                 }
             }
 
         }
         if (requestCode == 1 && resultCode == RESULT_OK) {
 
-            val photo = data!!.extras!!["data"] as Bitmap?
-            val uri= Uri.parse(MediaStore.Images.Media.insertImage(getContentResolver(), photo, "", ""))
-
+            val photo = data!!.extras!!["data"] as Bitmap
+                     val uri = Uri.parse(MediaStore.Images.Media.insertImage(getContentResolver(), photo, "", ""))
             imageResId.add(uri.toString())
+            adapter.addList(imageResId)
             update()
 
         }
@@ -230,7 +261,8 @@ class MainActivity : BaseActivity(), PictureTagFrameLayout.ITagLayoutCallBack {
         for (i in imageResId.indices) {
             val options = BitmapFactory.Options()
             options.inJustDecodeBounds = true
-            BitmapFactory.decodeResource(resources,imageResI[0], options)
+            val realPathFromUri = RealPathFromUriUtils.getRealPathFromUri(this@MainActivity, Uri.parse(imageResId[0]))
+            BitmapFactory.decodeFile(realPathFromUri, options)
             val chooserModel = ChooserModel()
             chooserModel.setId(imageResId[i])
             chooserModel.setHeight(options.outHeight)
@@ -261,3 +293,6 @@ class MainActivity : BaseActivity(), PictureTagFrameLayout.ITagLayoutCallBack {
 
 
 }
+
+
+

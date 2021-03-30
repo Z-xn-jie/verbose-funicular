@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.sprout">
 
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission
         android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"
         tools:ignore="ProtectedPermissions" />
@@ -29,7 +30,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Demo"
         android:usesCleartextTraffic="true">
-        <activity android:name=".view.WeiActivity"></activity>
+        <activity android:name=".view.ShangActivity"></activity>
+        <activity android:name=".view.WeiActivity" />
         <activity android:name=".view.ZhiActivity" />
 
         <meta-data

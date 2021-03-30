@@ -54,6 +54,7 @@ android {
 }
 
 dependencies {
+    implementation 'com.aliyun.dpa:oss-android-sdk:2.9.5'
     api 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:+'
     implementation group: 'com.alipay.sdk', name: 'alipay-sdk-java', version: '4.13.0.ALL'
     api(name:'alipaysdk-15.8.02.210308182128', ext:'aar')
