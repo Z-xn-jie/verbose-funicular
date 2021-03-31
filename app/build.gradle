@@ -50,7 +50,9 @@ android {
             dirs 'libs'
         }
     }
-
+    androidExtensions {
+        experimental = true
+    }
 }
 
 dependencies {

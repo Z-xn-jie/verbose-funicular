@@ -8,44 +8,45 @@ import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.provider.MediaStore
+import android.util.Log
 import android.view.*
 import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
+import androidx.viewpager.widget.ViewPager.OnPageChangeListener
 import com.example.book.base.BasePagerAdapter
 import com.facebook.drawee.backends.pipeline.Fresco
 import com.google.android.material.tabs.TabLayout
 import com.sprout.R
 import com.sprout.baselibrary.base.BaseActivity
 import com.sprout.baselibrary.utils.RealPathFromUriUtils
-import com.sprout.bean.ChooserModel
-import com.sprout.bean.IChooserModel
-import com.sprout.bean.ITagBean
-import com.sprout.bean.TagBean
+import com.sprout.bean.*
 import com.sprout.homecomponent.view.HomeFragment
 import com.sprout.searchcomponent.view.SearchFragment
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.item_table.view.*
-import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.concurrent.timerTask
 
 
 class MainActivity : BaseActivity(), PictureTagFrameLayout.ITagLayoutCallBack {
 
     open lateinit var mViewPager: ViewPager
     private var mPointX: Float = 0F
-    private val imageResI = intArrayOf(R.drawable.icon2, R.drawable.icon3, R.drawable.icon4, R.drawable.icon5)
     lateinit var adapter: ImageAdapter
     private var mPointY: Float = 0F
     lateinit var videoview: VideoView
     lateinit var imagess: ImageView
     private var mImageAdapter: ImagePagerAdapterForPublish? = null
     private val mTagBeansMap: Map<String, List<ITagBean>>? = null
+     val uriList: ArrayList<String> = arrayListOf()
     private var imageResId: ArrayList<String> = ArrayList()
-    private var i: Int = 0
+    private var reList: ArrayList<CommitBean.Re> = ArrayList()
+    private var tagList: ArrayList<CommitBean.Re.Tag> = ArrayList()
+    private var commitBean = CommitBean("北京",1,0,0,"",reList,1,"",1)
+    private var count = 0;
+
 
     /** 主菜单（图标） */
     private val mIcons = intArrayOf(
@@ -119,7 +120,13 @@ class MainActivity : BaseActivity(), PictureTagFrameLayout.ITagLayoutCallBack {
         val shangchuan = view.findViewById<TextView>(R.id.shang_chuan)
         val recycler = view.findViewById<RecyclerView>(R.id.recyclerView)
         shangchuan.setOnClickListener {
-            startActivity(Intent(this@MainActivity,ShangActivity::class.java))
+            if(imageResId.size == 0){
+                Toast.makeText(this@MainActivity,"未選擇圖片",Toast.LENGTH_SHORT).show()
+            }else {
+                val intent = Intent(this@MainActivity, ShangActivity::class.java)
+                intent.putExtra("uri",commitBean)
+                startActivity(intent)
+            }
         }
         videoview = view.findViewById<VideoView>(R.id.videoview)
         mViewPager = view.findViewById(R.id.images)
@@ -139,7 +146,21 @@ class MainActivity : BaseActivity(), PictureTagFrameLayout.ITagLayoutCallBack {
             startActivityForResult(intent, 100)
         }
         mViewPager.setAdapter(mImageAdapter)
+        mViewPager.addOnPageChangeListener(object : OnPageChangeListener {
+            override fun onPageScrollStateChanged(state: Int) {
+            }
 
+            override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
+
+            }
+
+            override fun onPageSelected(position: Int) {
+                count = position
+
+            }
+
+        })
+        mViewPager.setOffscreenPageLimit(9)
         button_paizhao.setOnClickListener {
             val intents = Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
@@ -243,7 +264,10 @@ class MainActivity : BaseActivity(), PictureTagFrameLayout.ITagLayoutCallBack {
     fun onTagSelected(tagBean: ITagBean?) {
         if (tagBean != null && mImageAdapter != null) {
             val itemView = mImageAdapter!!.primaryItem
+            Log.e("TAG", "onTagSelected: ")
             if (itemView is PictureTagFrameLayout) {
+                val arrayList = reList.get(count).tags as ArrayList
+                arrayList.add(com.sprout.bean.CommitBean.Re.Tag(1,tagBean.tagName,1,tagBean.sx,tagBean.sy))
                 tagBean.sx = mPointX
                 tagBean.sy = mPointY
                 itemView.addItem(tagBean)
@@ -257,11 +281,13 @@ class MainActivity : BaseActivity(), PictureTagFrameLayout.ITagLayoutCallBack {
 
 
     private fun update() {
-        val mMediaTotal: MutableList<IChooserModel> = ArrayList<IChooserModel>()
+        val mMediaTotal: MutableList<IChooserModel> = ArrayList()
+        reList.clear()
         for (i in imageResId.indices) {
             val options = BitmapFactory.Options()
             options.inJustDecodeBounds = true
-            val realPathFromUri = RealPathFromUriUtils.getRealPathFromUri(this@MainActivity, Uri.parse(imageResId[0]))
+            val realPathFromUri = RealPathFromUriUtils.getRealPathFromUri(this@MainActivity, Uri.parse(imageResId[i]))
+          reList.add(com.sprout.bean.CommitBean.Re(ArrayList(),realPathFromUri))
             BitmapFactory.decodeFile(realPathFromUri, options)
             val chooserModel = ChooserModel()
             chooserModel.setId(imageResId[i])

@@ -5,9 +5,45 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".view.ShangActivity">
+    <ProgressBar
+        android:progress="0"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:id="@+id/seek"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/btn_ok"/>
+    <TextView
+        android:id="@+id/text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="wenjianming"
+        app:layout_constraintTop_toBottomOf="@id/seek"
+        android:gravity="center"/>
 <Button
+    app:layout_constraintLeft_toLeftOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:text="上傳"
     android:id="@+id/btn_ok"/>
+    <Button
+        android:enabled="false"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="發佈"
+        android:id="@+id/btn_fa"/>
+    <EditText
+        android:hint="標題"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/titles"
+        app:layout_constraintTop_toBottomOf="@id/text"/>
+    <EditText
+        android:hint="內容"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/texts"
+        app:layout_constraintTop_toBottomOf="@id/titles"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

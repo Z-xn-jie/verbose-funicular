@@ -21,6 +21,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
@@ -127,6 +128,43 @@ public class RetrofitUtil implements INetWorkInterface {
     @Override
     public <T> void postBody(String url, HashMap<String, String> body, INetCallBack<T> callBack) {
         apiServices.postBody(url,body)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<ResponseBody>() {
+                    @Override
+                    public void onSubscribe(@NonNull Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(@NonNull ResponseBody responseBody) {
+                        try {
+                            String string = responseBody.string();
+                            Type[] genericInterfaces = callBack.getClass().getGenericInterfaces();
+                            Type[] actualTypeArguments = ((ParameterizedType) genericInterfaces[0]).getActualTypeArguments();
+                            Type t = actualTypeArguments[0];
+                            T result = new Gson().fromJson(string, t);
+                            callBack.success(result);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+                        Log.e("TAG", "City_onError: "+e.getMessage());
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+    }
+
+    @Override
+    public <T> void postRequestHeaderBody(String url, HashMap<String, String> header, RequestBody requestBody, INetCallBack<T> callBack) {
+        apiServices.postRequestHeaderBody(url,header,requestBody)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<ResponseBody>() {
